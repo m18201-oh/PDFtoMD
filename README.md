@@ -23,6 +23,7 @@
 - PowerShell 사용 기준
 - 권장 설치 경로: `C:\Code\PDFtoMD`, `C:\Code\docuConverter01`
 - `PDFtoMD`는 단독 실행이 아니라 `docuConverter01`과 함께 동작
+- `docuConverter01`은 `frontend` 브랜치 기준으로 설치 권장
 - 이메일 알림을 쓰려면 `.env` 설정 필요
 
 ## 3. 현재 동작 방식
@@ -65,7 +66,7 @@ pip install -r requirements.txt
 
 ### 4.2 docuConverter01 설치
 
-`PDFtoMD`는 `C:\Code\docuConverter01` 프로젝트를 함께 사용합니다.
+`PDFtoMD`는 `C:\Code\docuConverter01` 프로젝트를 함께 사용합니다. 설치 후에는 `docuConverter01` 저장소의 `README.md`와 `RELEASE_CHECKLIST.md`를 기준으로 추가 검증할 수 있습니다.
 
 ```bash
 cd C:\Code
