@@ -16,6 +16,7 @@
 - [USER_GUIDE.md](./USER_GUIDE.md): 비개발자가 가장 짧고 쉽게 전체 사용 흐름을 파악하기 위한 안내 문서
 - [OPERATIONS_MANUAL.md](./OPERATIONS_MANUAL.md): 운영자가 현재 상태를 판단하고 문제에 대응하기 위한 실무 문서
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md): 다른 PC 배포 전후에 확인할 항목을 정리한 문서
+- [QUICK_DEPLOY.md](./QUICK_DEPLOY.md): 설치 담당자가 짧은 순서대로 바로 따라 하는 실행용 문서
 
 ## 2. 지원 환경과 전제
 
@@ -159,3 +160,4 @@ MIT License
 - [USER_GUIDE.md](./USER_GUIDE.md)
 - [OPERATIONS_MANUAL.md](./OPERATIONS_MANUAL.md)
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md)
+- [QUICK_DEPLOY.md](./QUICK_DEPLOY.md)
