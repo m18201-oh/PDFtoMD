@@ -12,6 +12,18 @@ build/
 .vscode/
 .idea/
 
+# Secrets
+.env
+
+# Runtime
+.lock
+done/
+logs/
+Rejected/
+temp_debug/
+watch/
+workspace/
+
 # OS
 Thumbs.db
 .DS_Store
