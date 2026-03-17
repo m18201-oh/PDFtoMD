@@ -25,12 +25,13 @@
 - 권장 설치 경로: `C:\Code\PDFtoMD`, `C:\Code\docuConverter01`
 - `PDFtoMD`는 단독 실행이 아니라 `docuConverter01`과 함께 동작
 - `docuConverter01`은 `frontend` 브랜치 기준으로 설치 권장
+- 장시간 대량 변환은 개인 업무용 PC보다 서버나 유휴 자원이 있는 환경에 더 적합
 - 이메일 알림을 쓰려면 `.env` 설정 필요
 
 ## 3. 현재 동작 방식
 
 - `watch/` 폴더에 들어온 PDF 자동 감지
-- watcher가 `watch/` 폴더를 주기적으로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
+- watcher가 `watch/` 폴더를 10분 주기로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
 - PDF 유효성 검사 후 비정상 파일은 `Rejected/`로 격리
 - PDF를 페이지별로 분할 후 외부 변환기 `C:\Code\docuConverter01`에 전달
 - 변환된 페이지별 Markdown을 하나로 병합
