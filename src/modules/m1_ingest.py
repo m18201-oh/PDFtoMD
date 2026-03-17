@@ -1,6 +1,6 @@
 """
 Module 1 — 인입
-watch/의 PDF를 workspace/{job_id}/ 서브폴더로 복사하고 job_manifest.json 초기화.
+01_watch_inbox의 PDF를 02_workspace/{job_id}/ 서브폴더로 복사하고 job_manifest.json 초기화.
 PRD v2.2 § 5 "Module 1"
 """
 
@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
-from config import WORKSPACE_DIR
+from src.config import WORKSPACE_DIR
 
 logger = logging.getLogger("PDFtoMD")
 
@@ -21,7 +21,7 @@ COPY_RETRY_DELAY = 5  # 초
 
 def ingest(pdf_path: Path) -> str:
     """
-    PDF 파일을 workspace/{job_id}/ 서브폴더로 복사하고 job_manifest.json 생성.
+    PDF 파일을 02_workspace/{job_id}/ 서브폴더로 복사하고 job_manifest.json 생성.
     Returns: job_id 문자열
     """
     # job_id 생성: {파일명}_{YYYYmmdd_HHMMSS}
@@ -29,7 +29,7 @@ def ingest(pdf_path: Path) -> str:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     job_id = f"{stem}_{timestamp}"
 
-    # workspace/{job_id}/ 서브폴더 생성
+    # 02_workspace/{job_id}/ 서브폴더 생성
     job_dir = WORKSPACE_DIR / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
 

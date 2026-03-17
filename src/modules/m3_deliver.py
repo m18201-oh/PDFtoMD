@@ -7,13 +7,17 @@ PRD v2.2 § 5 "Module 3" + § 4.2
 import shutil
 import subprocess
 import logging
+import tempfile
+import time
 from pathlib import Path
 import json
 
-from config import (
+from src.config import (
     CONVERTER_DIR, CONVERTER_INPUT_DIR, CONVERTER_OUTPUT_DIR,
     CONVERTER_VENV_PYTHON, CONVERTER_WORKERS, CONVERT_TIMEOUT, WORKSPACE_DIR,
+    CONVERTER_MONITOR_INITIAL_INTERVAL, CONVERTER_MONITOR_MAX_INTERVAL,
 )
+from src.modules.reporter import send_stall_alert
 
 logger = logging.getLogger("PDFtoMD")
 
@@ -138,13 +142,70 @@ def deliver(job_id: str, page_files: list[Path], total_pages: int):
     ]
     logger.info("[M3] docuConverter01 실행: %s", " ".join(cmd))
 
-    result = subprocess.run(
-        cmd,
-        cwd=str(CONVERTER_DIR),
-        timeout=CONVERT_TIMEOUT,
-        capture_output=True,
-        text=True,
-    )
+    with tempfile.TemporaryFile(mode="w+t", encoding="utf-8") as stdout_file, tempfile.TemporaryFile(
+        mode="w+t",
+        encoding="utf-8",
+    ) as stderr_file:
+        process = subprocess.Popen(
+            cmd,
+            cwd=str(CONVERTER_DIR),
+            stdout=stdout_file,
+            stderr=stderr_file,
+            text=True,
+        )
+
+        started_at = time.time()
+        last_progress_at = started_at
+        monitor_interval = CONVERTER_MONITOR_INITIAL_INTERVAL
+        stall_alert_sent = False
+        converted_count = len(_output_md_stems() & expected)
+
+        while True:
+            returncode = process.poll()
+            if returncode is not None:
+                break
+
+            now = time.time()
+            if now - started_at > CONVERT_TIMEOUT:
+                process.kill()
+                process.wait(timeout=30)
+                raise RuntimeError(f"docuConverter01 변환 타임아웃 ({CONVERT_TIMEOUT}초)")
+
+            current_count = len(_output_md_stems() & expected)
+            if current_count > converted_count:
+                converted_count = current_count
+                last_progress_at = now
+                monitor_interval = CONVERTER_MONITOR_INITIAL_INTERVAL
+                stall_alert_sent = False
+                logger.info("[M3] 변환 진행: %d / %d 페이지 완료", converted_count, total_pages)
+            else:
+                if now - last_progress_at >= monitor_interval:
+                    logger.info(
+                        "[M3] 진행 없음: %d / %d 페이지 완료, 다음 확인 %d초 후",
+                        converted_count,
+                        total_pages,
+                        monitor_interval,
+                    )
+                    if monitor_interval >= CONVERTER_MONITOR_MAX_INTERVAL and not stall_alert_sent:
+                        send_stall_alert(job_id, converted_count, total_pages, monitor_interval)
+                        stall_alert_sent = True
+                    monitor_interval = min(monitor_interval * 2, CONVERTER_MONITOR_MAX_INTERVAL)
+                    last_progress_at = now
+
+            time.sleep(1)
+
+        stdout_file.seek(0)
+        stderr_file.seek(0)
+        stdout_text = stdout_file.read()
+        stderr_text = stderr_file.read()
+
+    class CompletedResult:
+        def __init__(self, returncode: int, stdout: str, stderr: str):
+            self.returncode = returncode
+            self.stdout = stdout
+            self.stderr = stderr
+
+    result = CompletedResult(process.returncode, stdout_text, stderr_text)
 
     # 6) 결과 확인
     if result.returncode != 0:

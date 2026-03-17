@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from config import LOCK_FILE
+from src.config import LOCK_FILE
 
 logger = logging.getLogger("PDFtoMD")
 

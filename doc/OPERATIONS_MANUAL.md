@@ -4,9 +4,9 @@
 
 | 항목 | 내용 |
 | :--- | :--- |
-| 문서 버전 | v1.0 |
+| 문서 버전 | v1.1 |
 | 대상 독자 | 운영 담당자 및 관리자 |
-| 최종 수정일 | 2026-03-16 |
+| 최종 수정일 | 2026-03-17 |
 
 ---
 
@@ -16,13 +16,13 @@
 
 ### 1.1 로그 파일 확인
 메모장이나 IDE에서 아래 파일을 열어보세요. 작업이 진행될 때마다 기록이 계속 추가됩니다.
-- **경로**: `C:\Code\PDFtoMD\logs\run.log`
+- **경로**: `C:\Code\PDFtoMD\05_logs\run.log`
 - **내용**: 파일 인입, 검증, 분할, 외부 엔진 호출, 완료 등의 전체 과정이 기록됩니다.
 
 ### 1.2 실시간 로그 모니터링
 IDE 하단의 `Terminal` 탭에서 아래 명령어를 입력하면, 로그가 추가될 때마다 화면에 자동으로 출력됩니다.
 ```powershell
-Get-Content C:\Code\PDFtoMD\logs\run.log -Wait
+Get-Content C:\Code\PDFtoMD\05_logs\run.log -Wait
 ```
 
 ---
@@ -31,7 +31,7 @@ Get-Content C:\Code\PDFtoMD\logs\run.log -Wait
 
 작업이 길어지거나 오류가 발생하면 시스템은 다음 순서로 상태를 알려줍니다.
 
-- **중간 브리핑**: `config.py`의 `REPORT_INTERVAL`(기본 10분)마다 "현재 어느 파일을 처리 중인지" 이메일로 발송합니다.
+- **중간 브리핑**: `src/config.py`의 `REPORT_INTERVAL`(기본 10분)마다 "현재 어느 파일을 처리 중인지" 이메일로 발송합니다.
 - **종료 보고**: 전체 배치 작업이 끝나면 총 성공/실패 건수와 파일 목록을 담은 이메일을 발송합니다.
 - **오류 발생**: 문제가 생기면 즉시 이메일을 시도하고, 실패하면 Windows 우측 하단 토스트 알림, 그다음 `error.log` 기록으로 이어집니다.
 
@@ -55,24 +55,24 @@ Get-Content C:\Code\PDFtoMD\logs\run.log -Wait
 
 운영 중에는 아래 위치만 알고 있어도 대부분의 상황을 파악할 수 있습니다.
 
-1. **실행 과정 기록**: `C:\Code\PDFtoMD\logs\run.log` (가장 상세한 타임스탬프 기록)
-2. **작업물 명세**: 각 작업이 일어날 때마다 `C:\Code\PDFtoMD\workspace\{job_id}\job_manifest.json` 파일에 파일명, 시각, 상태, 페이지 수가 기록됩니다.
-3. **최종 결과물 보관**: `C:\Code\PDFtoMD\done\` 폴더에 원본 PDF와 결과 MD 파일이 함께 보관됩니다.
-4. **작업 브리핑 문서**: `C:\Code\PDFtoMD\done\` 폴더에 작업별 브리핑 Markdown이 함께 생성되며, 페이지당 평균 처리시간과 예측 기준을 확인할 수 있습니다.
+1. **실행 과정 기록**: `C:\Code\PDFtoMD\05_logs\run.log` (가장 상세한 타임스탬프 기록)
+2. **작업물 명세**: 각 작업이 일어날 때마다 `C:\Code\PDFtoMD\02_workspace\{job_id}\job_manifest.json` 파일에 파일명, 시각, 상태, 페이지 수가 기록됩니다.
+3. **최종 결과물 보관**: `C:\Code\PDFtoMD\04_done\` 폴더에 원본 PDF와 결과 MD 파일이 함께 보관됩니다.
+4. **작업 브리핑 문서**: `C:\Code\PDFtoMD\04_done\` 폴더에 작업별 브리핑 Markdown이 함께 생성되며, 페이지당 평균 처리시간과 예측 기준을 확인할 수 있습니다.
 
 ## 5. 장애 대응 (트러블슈팅)
 
-- **PC를 끄면 진행 중 작업은 어떻게 되나요?**: 현재 버전은 중단 시점의 `workspace/`, `docuConverter01/input/`, `docuConverter01/output/` 상태를 바탕으로 다음 실행 때 이어받기를 시도합니다. 이미 만들어진 페이지별 Markdown은 재사용하고, 남은 페이지부터 다시 진행합니다.
+- **PC를 끄면 진행 중 작업은 어떻게 되나요?**: 현재 버전은 중단 시점의 `02_workspace/`, `docuConverter01/input/`, `docuConverter01/output/` 상태를 바탕으로 다음 실행 때 이어받기를 시도합니다. 이미 만들어진 페이지별 Markdown은 재사용하고, 남은 페이지부터 다시 진행합니다.
 - **파일이 안 움직여요**: `C:\Code\PDFtoMD\.lock` 파일이 있는지 확인하세요. 만약 비정상 종료되어 이 파일이 남아있다면 삭제 후 재시작하면 됩니다.
-- **변환이 안 돼요**: `C:\Code\PDFtoMD\Rejected\` 폴더를 확인하세요. 파일이 깨졌거나 PDF가 아닌 경우 이곳으로 격리되며, 그 사유가 적힌 텍스트 파일이 함께 생성됩니다.
-- **결과 MD가 안 보여요**: `watch/`가 아니라 `done/` 폴더를 먼저 확인하세요. 현재 코드 기준 최종 MD는 `done/`에 배치됩니다.
-- **작업시간 예측 기준을 보고 싶어요**: `done/` 폴더의 작업 브리핑 Markdown을 열어보세요. `docuConverter01`의 `conversion_metrics.json`을 바탕으로 페이지당 평균 처리시간과 예상 소요 시간이 정리됩니다.
-- **오류 로그가 반복돼요**: `C:\Code\PDFtoMD\logs\error.log`에서 `docuConverter01 완료되었으나 output/에 MD 파일 없음` 같은 문구가 보이면, PDFtoMD보다 외부 변환기 `C:\Code\docuConverter01` 쪽을 함께 점검해야 합니다.
+- **변환이 안 돼요**: `C:\Code\PDFtoMD\03_rejected\` 폴더를 확인하세요. 파일이 깨졌거나 PDF가 아닌 경우 이곳으로 격리되며, 그 사유가 적힌 텍스트 파일이 함께 생성됩니다.
+- **결과 MD가 안 보여요**: `01_watch_inbox/`가 아니라 `04_done/` 폴더를 먼저 확인하세요. 현재 코드 기준 최종 MD는 `04_done/`에 배치됩니다.
+- **작업시간 예측 기준을 보고 싶어요**: `04_done/` 폴더의 작업 브리핑 Markdown을 열어보세요. `docuConverter01`의 `conversion_metrics.json`을 바탕으로 페이지당 평균 처리시간과 예상 소요 시간이 정리됩니다.
+- **오류 로그가 반복돼요**: `C:\Code\PDFtoMD\05_logs\error.log`에서 `docuConverter01 완료되었으나 output/에 MD 파일 없음` 같은 문구가 보이면, PDFtoMD보다 외부 변환기 `C:\Code\docuConverter01` 쪽을 함께 점검해야 합니다.
 
 ---
 
 ## 관련 문서
 
-- [README.md](./README.md)
+- [README.md](../README.md)
 - [USER_GUIDE.md](./USER_GUIDE.md)
 - [OPERATIONS_MANUAL.md](./OPERATIONS_MANUAL.md)

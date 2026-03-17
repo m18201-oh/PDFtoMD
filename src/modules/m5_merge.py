@@ -8,7 +8,7 @@ import json
 import logging
 from pathlib import Path
 
-from config import WORKSPACE_DIR, MD_PAGE_SEPARATOR
+from src.config import WORKSPACE_DIR, MD_PAGE_SEPARATOR
 
 logger = logging.getLogger("PDFtoMD")
 

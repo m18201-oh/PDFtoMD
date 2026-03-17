@@ -1,6 +1,6 @@
 """
 Module 4 — 회수 (MD 파일 수집 + 완료 검증)
-docuConverter01/output/의 MD 파일을 workspace/{job_id}/로 회수.
+docuConverter01/output/의 MD 파일을 02_workspace/{job_id}/로 회수.
 PRD v2.2 § 5 "Module 4"
 """
 
@@ -9,14 +9,14 @@ import shutil
 import logging
 from pathlib import Path
 
-from config import WORKSPACE_DIR, CONVERTER_OUTPUT_DIR
+from src.config import WORKSPACE_DIR, CONVERTER_OUTPUT_DIR
 
 logger = logging.getLogger("PDFtoMD")
 
 
 def collect(job_id: str) -> list[Path]:
     """
-    output/ MD 파일을 workspace/{job_id}/로 복사하고 검증.
+    output/ MD 파일을 02_workspace/{job_id}/로 복사하고 검증.
     Returns: workspace 내 MD 파일 경로 리스트
     """
     job_dir = WORKSPACE_DIR / job_id
@@ -54,7 +54,7 @@ def collect(job_id: str) -> list[Path]:
             error_msg.append(f"빈 MD 파일: {empty}")
         raise RuntimeError(f"[M4] 변환 결과 검증 실패 — {'; '.join(error_msg)}")
 
-    # 검증 통과 → workspace/{job_id}/로 복사
+    # 검증 통과 → 02_workspace/{job_id}/로 복사
     collected = []
     for md in output_md_files:
         dest = job_dir / md.name

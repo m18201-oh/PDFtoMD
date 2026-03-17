@@ -13,7 +13,7 @@ from datetime import datetime
 
 from PyPDF2 import PdfReader
 
-from config import WORKSPACE_DIR, REJECTED_DIR
+from src.config import WORKSPACE_DIR, REJECTED_DIR
 
 logger = logging.getLogger("PDFtoMD")
 
@@ -32,8 +32,8 @@ def _write_reject_reason(reject_dir: Path, filename: str, reason: str):
 
 def validate(job_id: str, pdf_path: Path) -> Path | None:
     """
-    workspace/{job_id}/ 내 복사된 PDF를 검증.
-    통과 시 검증된 PDF 경로 반환, 실패 시 Rejected/ 격리 후 None 반환.
+    02_workspace/{job_id}/ 내 복사된 PDF를 검증.
+    통과 시 검증된 PDF 경로 반환, 실패 시 03_rejected/ 격리 후 None 반환.
     """
     job_dir = WORKSPACE_DIR / job_id
     copied_pdf = job_dir / pdf_path.name
@@ -92,7 +92,7 @@ def validate(job_id: str, pdf_path: Path) -> Path | None:
 
 
 def _reject(pdf_path: Path, reject_dir: Path, reason: str):
-    """파일을 Rejected/ 폴더로 격리."""
+    """파일을 03_rejected/ 폴더로 격리."""
     reject_dir.mkdir(parents=True, exist_ok=True)
     try:
         shutil.move(str(pdf_path), str(reject_dir / pdf_path.name))

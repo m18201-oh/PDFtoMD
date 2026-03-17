@@ -10,7 +10,7 @@ from pathlib import Path
 
 from PyPDF2 import PdfReader, PdfWriter
 
-from config import WORKSPACE_DIR
+from src.config import WORKSPACE_DIR
 
 logger = logging.getLogger("PDFtoMD")
 

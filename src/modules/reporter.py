@@ -1,10 +1,10 @@
 """
-reporter.py — 보고 시스템 (이메일 + Windows 토스트 + error.log Fallback)
+reporter.py — 보고 시스템 (이메일 + Windows 토스트 + 05_logs/error.log Fallback)
 PRD v2.2 § 6.3 — 3단계 fallback 알림
 
   1순위: 이메일 (smtplib + Gmail SMTP)
   2순위: Windows 토스트 알림 (winotify)
-  3순위: logs/error.log 기록 (최종 안전망)
+  3순위: 05_logs/error.log 기록 (최종 안전망)
 """
 
 import smtplib
@@ -13,7 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-from config import (
+from src.config import (
     SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD,
     ADMIN_EMAIL, ERROR_LOG_FILE, LOG_DIR,
 )
@@ -148,3 +148,28 @@ def send_error(job_id: str, error_message: str):
 
     # 3순위: error.log (최종 안전망)
     _log_error(f"[{job_id}] {error_message}")
+
+
+def send_stall_alert(job_id: str, converted: int, total: int, interval_seconds: int):
+    """진행 정체 알림. 30분 무진행 감지 시 호출."""
+    subject = f"[PDFtoMD] 진행 정체 알림: {job_id}"
+    body = (
+        f"PDFtoMD 진행 정체 알림\n"
+        f"{'=' * 40}\n"
+        f"Job ID: {job_id}\n"
+        f"완료 페이지: {converted}/{total}\n"
+        f"현재 모니터링 간격: {interval_seconds}초\n"
+        f"시각: {datetime.now().isoformat()}\n"
+    )
+
+    if _send_email(subject, body):
+        return
+
+    if _send_toast(
+        "PDFtoMD 진행 정체",
+        f"{job_id}: {converted}/{total}, 확인 간격 {interval_seconds}초",
+    ):
+        _log_error(f"[STALL:{job_id}] {converted}/{total}, interval={interval_seconds}s")
+        return
+
+    _log_error(f"[STALL:{job_id}] {converted}/{total}, interval={interval_seconds}s")

@@ -2,16 +2,16 @@
 
 | 항목 | 내용 |
 | :--- | :--- |
-| 문서 버전 | v1.0 |
+| 문서 버전 | v1.1 |
 | 대상 독자 | 배포 담당자 |
-| 최종 수정일 | 2026-03-16 |
+| 최종 수정일 | 2026-03-17 |
 
 ## 1. 배포 전 확인
 
 - `PDFtoMD` 최신 코드가 GitHub에 push 되어 있는지 확인
 - `docuConverter01` 최신 코드가 필요한 브랜치(`frontend`)에 반영되어 있는지 확인
-- `.gitignore`에 `done/`, `logs/`, `watch/`, `workspace/`, `Rejected/` 같은 운영 산출물이 제외되어 있는지 확인
-- `README.md`, `USER_GUIDE.md`, `OPERATIONS_MANUAL.md`가 현재 코드 기준과 맞는지 확인
+- `.gitignore`에 `01_watch_inbox/`, `02_workspace/`, `03_rejected/`, `04_done/`, `05_logs/` 같은 운영 산출물이 제외되어 있는지 확인
+- `README.md`, `doc/USER_GUIDE.md`, `doc/OPERATIONS_MANUAL.md`가 현재 코드 기준과 맞는지 확인
 
 ## 2. 대상 PC 준비
 
@@ -48,17 +48,17 @@ pip install -r requirements.txt
 ## 4. 설정 확인
 
 - `C:\Code\PDFtoMD\.env` 파일 준비
-- `C:\Code\PDFtoMD\config.py` 경로 확인
+- `C:\Code\PDFtoMD\src\config.py` 경로 확인
 - `register_watcher.ps1` 내부 경로 확인
 - `run_watcher.bat` 내부 경로 확인
 
 ## 5. 동작 테스트
 
 - `run_watcher.bat`로 수동 실행 테스트
-- `watch` 폴더에 테스트용 PDF 1개 복사
-- `logs\run.log`에 처리 시작 로그가 찍히는지 확인
-- `done` 폴더에 결과 `.md`, 원본 PDF, `_briefing.md`가 생기는지 확인
-- 오류 시 `logs\error.log` 확인
+- `01_watch_inbox` 폴더에 테스트용 PDF 1개 복사
+- `05_logs\run.log`에 처리 시작 로그가 찍히는지 확인
+- `04_done` 폴더에 결과 `.md`, 원본 PDF, `_briefing.md`가 생기는지 확인
+- 오류 시 `05_logs\error.log` 확인
 
 ## 6. 자동 실행 등록
 
@@ -68,21 +68,21 @@ cd C:\Code\PDFtoMD
 ```
 
 - Windows 로그인 후 watcher 자동 실행 여부 확인
-- 재부팅 후 `watch`에 이미 남아 있는 PDF도 자동 처리되는지 확인
+- 재부팅 후 `01_watch_inbox`에 이미 남아 있는 PDF도 자동 처리되는지 확인
 
 ## 7. 배포 완료 기준
 
 - 수동 실행 정상
 - 자동 실행 정상
 - PDF 1건 이상 성공적으로 변환
-- `done` 폴더에 브리핑 문서까지 정상 생성
+- `04_done` 폴더에 브리핑 문서까지 정상 생성
 - 운영 문서 링크 확인 완료
 
 ---
 
 ## 관련 문서
 
-- [README.md](./README.md)
+- [README.md](../README.md)
 - [USER_GUIDE.md](./USER_GUIDE.md)
 - [OPERATIONS_MANUAL.md](./OPERATIONS_MANUAL.md)
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md)

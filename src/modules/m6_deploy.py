@@ -1,6 +1,6 @@
 """
 Module 6 — 산출물 배치
-통합 MD → done/ 이동 + 원본 PDF 처리 + 작업 브리핑 생성 + 작업 공간 정리.
+통합 MD → 04_done/ 이동 + 원본 PDF 처리 + 작업 브리핑 생성 + 작업 공간 정리.
 PRD v2.2 § 5 "Module 6"
 """
 
@@ -10,19 +10,19 @@ import logging
 from pathlib import Path
 from datetime import datetime
 
-from config import WATCH_DIR, DONE_DIR, WORKSPACE_DIR, ORIGINAL_PDF_POLICY
-from modules.job_briefing import create_job_briefing
+from src.config import WATCH_DIR, DONE_DIR, WORKSPACE_DIR, ORIGINAL_PDF_POLICY
+from src.modules.job_briefing import create_job_briefing
 
 logger = logging.getLogger("PDFtoMD")
 
 
 def deploy(job_id: str, merged_md: Path, original_pdf_path: Path):
     """
-    최종 MD를 done/에 배치하고 원본 PDF 처리 후 브리핑 생성 및 workspace 정리.
+    최종 MD를 04_done에 배치하고 원본 PDF 처리 후 브리핑 생성 및 02_workspace 정리.
     """
     DONE_DIR.mkdir(parents=True, exist_ok=True)
 
-    # 1) 통합 MD → DONE_DIR(done/) 이동 (사용자 요청: watch 대신 done)
+    # 1) 통합 MD → DONE_DIR(04_done/) 이동
     dest_name = merged_md.name
     dest = DONE_DIR / dest_name
     
@@ -33,7 +33,7 @@ def deploy(job_id: str, merged_md: Path, original_pdf_path: Path):
         dest = DONE_DIR / f"{stem}_{ts}.md"
 
     shutil.copy2(str(merged_md), str(dest))
-    logger.info("[M6] 최종 MD 배치: %s → done/", dest.name)
+    logger.info("[M6] 최종 MD 배치: %s → 04_done/", dest.name)
 
     # 2) 원본 PDF 처리
     archived_pdf_path = None
@@ -41,7 +41,7 @@ def deploy(job_id: str, merged_md: Path, original_pdf_path: Path):
         done_dest = DONE_DIR / f"{job_id}.pdf"
         try:
             shutil.move(str(original_pdf_path), str(done_dest))
-            logger.info("[M6] 원본 PDF → done/: %s", done_dest.name)
+            logger.info("[M6] 원본 PDF → 04_done/: %s", done_dest.name)
             archived_pdf_path = done_dest
         except FileNotFoundError:
             logger.warning("[M6] 원본 PDF 이미 없음 (이전 처리에서 삭제됨): %s", original_pdf_path)
@@ -72,11 +72,11 @@ def deploy(job_id: str, merged_md: Path, original_pdf_path: Path):
     except Exception as e:
         logger.warning("[M6] 작업 브리핑 생성 실패: %s", e)
 
-    # 4) workspace/{job_id}/ 서브폴더 정리
+    # 4) 02_workspace/{job_id}/ 서브폴더 정리
     job_dir = WORKSPACE_DIR / job_id
     try:
         if job_dir.exists():
             shutil.rmtree(str(job_dir))
-            logger.info("[M6] workspace/%s/ 정리 완료", job_id)
+            logger.info("[M6] 02_workspace/%s/ 정리 완료", job_id)
     except Exception as e:
         logger.warning("[M6] workspace 정리 실패: %s", e)

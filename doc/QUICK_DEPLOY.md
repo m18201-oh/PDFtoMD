@@ -2,9 +2,9 @@
 
 | 항목 | 내용 |
 | :--- | :--- |
-| 문서 버전 | v1.0 |
+| 문서 버전 | v1.1 |
 | 대상 독자 | 설치 담당자 |
-| 최종 수정일 | 2026-03-16 |
+| 최종 수정일 | 2026-03-17 |
 
 ## 목적
 
@@ -47,7 +47,7 @@ pip install -r requirements.txt
 아래 항목만 확인합니다.
 
 - `C:\Code\PDFtoMD\.env` 파일 존재
-- `C:\Code\PDFtoMD\config.py`가 `C:\Code\docuConverter01` 경로를 가리킴
+- `C:\Code\PDFtoMD\src\config.py`가 `C:\Code\docuConverter01` 경로를 가리킴
 - `C:\Code\PDFtoMD\.venv\Scripts\python.exe` 존재
 - `C:\Code\docuConverter01\.venv\Scripts\python.exe` 존재
 
@@ -60,9 +60,9 @@ cd C:\Code\PDFtoMD
 
 그다음:
 
-1. `watch` 폴더에 테스트 PDF 1개 넣기
-2. `logs\run.log` 확인
-3. `done` 폴더에 결과 `.md`, 원본 PDF, `_briefing.md` 생성 확인
+1. `01_watch_inbox` 폴더에 테스트 PDF 1개 넣기
+2. `05_logs\run.log` 확인
+3. `04_done` 폴더에 결과 `.md`, 원본 PDF, `_briefing.md` 생성 확인
 
 ### 6. 자동 실행 등록
 
@@ -75,13 +75,13 @@ cd C:\Code\PDFtoMD
 
 - 수동 테스트 성공
 - 자동 실행 등록 성공
-- `done` 폴더 결과 확인 성공
+- `04_done` 폴더 결과 확인 성공
 
 ---
 
 ## 관련 문서
 
-- [README.md](./README.md)
+- [README.md](../README.md)
 - [USER_GUIDE.md](./USER_GUIDE.md)
 - [OPERATIONS_MANUAL.md](./OPERATIONS_MANUAL.md)
 - [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md)

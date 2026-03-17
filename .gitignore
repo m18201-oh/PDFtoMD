@@ -17,12 +17,12 @@ build/
 
 # Runtime
 .lock
-done/
-logs/
-Rejected/
+01_watch_inbox/
+02_workspace/
+03_rejected/
+04_done/
+05_logs/
 temp_debug/
-watch/
-workspace/
 
 # OS
 Thumbs.db

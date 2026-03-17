@@ -1,5 +1,5 @@
 """
-작업 종료 후 done/ 폴더에 저장할 브리핑 Markdown 생성기.
+작업 종료 후 04_done/ 폴더에 저장할 브리핑 Markdown 생성기.
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from config import DONE_DIR, WORKSPACE_DIR
+from src.config import DONE_DIR, WORKSPACE_DIR
 
 
 def _fmt_seconds(seconds: float | None) -> str:
