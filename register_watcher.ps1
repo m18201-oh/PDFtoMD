@@ -1,12 +1,21 @@
-$TaskName = "PDFtoMD_Watcher"
+$AppName = "PDFtoMD_Watcher"
 $PythonExe = "C:\Code\PDFtoMD\.venv\Scripts\python.exe"
 $WatcherScript = "C:\Code\PDFtoMD\watcher.py"
 $WorkingDir = "C:\Code\PDFtoMD"
+$RunKeyPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 
-$Action = New-ScheduledTaskAction -Execute $PythonExe -Argument $WatcherScript -WorkingDirectory $WorkingDir
-$Trigger = New-ScheduledTaskTrigger -AtLogOn
-$Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Days 365)
+if (-not (Test-Path $PythonExe)) {
+    throw "Python executable not found: $PythonExe"
+}
 
-Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Force
+if (-not (Test-Path $WatcherScript)) {
+    throw "Watcher script not found: $WatcherScript"
+}
 
-Write-Host "Successfully registered $TaskName to run at Logon." -ForegroundColor Green
+$Command = "`"$PythonExe`" `"$WatcherScript`""
+
+New-Item -Path $RunKeyPath -Force | Out-Null
+Set-ItemProperty -Path $RunKeyPath -Name $AppName -Value $Command
+
+Write-Host "Successfully registered $AppName in HKCU Run for logon startup." -ForegroundColor Green
+Write-Host "Command: $Command" -ForegroundColor DarkGray

@@ -30,6 +30,7 @@
 ## 3. 현재 동작 방식
 
 - `watch/` 폴더에 들어온 PDF 자동 감지
+- watcher가 `watch/` 폴더를 주기적으로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
 - PDF 유효성 검사 후 비정상 파일은 `Rejected/`로 격리
 - PDF를 페이지별로 분할 후 외부 변환기 `C:\Code\docuConverter01`에 전달
 - 변환된 페이지별 Markdown을 하나로 병합
@@ -123,6 +124,8 @@ Copy-Item .env.example .env
 ### 6.1 자동 감시 등록
 
 PowerShell에서 아래 스크립트를 실행하면 Windows 로그인 시 watcher가 자동으로 시작됩니다.
+
+현재 등록 방식은 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 기준의 사용자 로그인 자동 시작입니다.
 
 ```powershell
 .\register_watcher.ps1

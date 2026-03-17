@@ -25,9 +25,19 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 log = logging.getLogger("watcher")
+POLL_INTERVAL_SECONDS = 10
+MIN_TRIGGER_GAP_SECONDS = 30
+_last_trigger_at = 0.0
 
 
 def trigger_main(reason: str):
+    global _last_trigger_at
+
+    now = time.time()
+    if now - _last_trigger_at < MIN_TRIGGER_GAP_SECONDS:
+        log.info("트리거 생략 (%s): 최근 %d초 이내 이미 트리거됨", reason, MIN_TRIGGER_GAP_SECONDS)
+        return
+
     venv_python = str(PROJECT_ROOT / ".venv" / "Scripts" / "python.exe")
     main_script = str(PROJECT_ROOT / "main.py")
     log.info("main.py 트리거 (%s)", reason)
@@ -35,6 +45,19 @@ def trigger_main(reason: str):
         [venv_python, main_script],
         cwd=str(PROJECT_ROOT),
     )
+    _last_trigger_at = now
+
+
+def check_pending_pdfs(reason: str):
+    pending_pdfs = sorted(WATCH_DIR.glob("*.pdf"))
+    if not pending_pdfs:
+        return
+    if lock_is_active():
+        log.info("보류 작업 %d개 감지했지만 lock 활성 상태라 대기합니다.", len(pending_pdfs))
+        return
+
+    log.info("watch/에 처리 대기 PDF %d개 존재", len(pending_pdfs))
+    trigger_main(reason)
 
 
 class PDFHandler(FileSystemEventHandler):
@@ -64,15 +87,12 @@ def main():
     observer.schedule(handler, str(WATCH_DIR), recursive=False)
     observer.start()
     log.info("감시 시작: %s", WATCH_DIR)
-
-    existing_pdfs = sorted(WATCH_DIR.glob("*.pdf"))
-    if existing_pdfs and not lock_is_active():
-        log.info("watch/에 기존 PDF %d개 존재 — 시작 시 즉시 처리 시도", len(existing_pdfs))
-        trigger_main("watch/ 기존 PDF 감지")
+    check_pending_pdfs("watch/ 기존 PDF 감지")
 
     try:
         while True:
-            time.sleep(1)
+            time.sleep(POLL_INTERVAL_SECONDS)
+            check_pending_pdfs("watch/ 폴더 폴링 감지")
     except KeyboardInterrupt:
         log.info("감시 종료 (Ctrl+C)")
         observer.stop()
