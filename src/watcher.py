@@ -26,7 +26,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 log = logging.getLogger("watcher")
-POLL_INTERVAL_SECONDS = 10
+POLL_INTERVAL_SECONDS = 1800
 MIN_TRIGGER_GAP_SECONDS = 30
 _last_trigger_at = 0.0
 

@@ -72,7 +72,7 @@ PDFtoMD/
 ## 4. 현재 동작 방식
 
 - `01_watch_inbox/` 폴더에 들어온 PDF 자동 감지
-- watcher가 `01_watch_inbox/` 폴더를 10분 주기로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
+- watcher가 `01_watch_inbox/` 폴더를 30분 주기로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
 - PDF 유효성 검사 후 비정상 파일은 `03_rejected/`로 격리
 - PDF를 페이지별로 분할 후 외부 변환기 `C:\Code\docuConverter01`에 전달
 - 변환된 페이지별 Markdown을 하나로 병합
