@@ -1,12 +1,12 @@
 # PDFtoMD
 
-`01_watch_inbox` 폴더에 PDF가 들어오면 자동으로 Markdown으로 변환하는 도구입니다.
+`01_watch_inbox` 폴더에 PDF를 넣고, Antigravity IDE 프롬프트에서 명령을 내리면 Markdown으로 변환하는 도구입니다.
 
 | 항목 | 내용 |
 | :--- | :--- |
-| 문서 버전 | v1.3 |
+| 문서 버전 | v1.4 |
 | 대상 독자 | 제품 개요와 빠른 시작이 필요한 사용자 |
-| 최종 수정일 | 2026-03-17 |
+| 최종 수정일 | 2026-04-01 |
 
 ## 1. 문서 안내
 
@@ -38,14 +38,10 @@
 ```text
 PDFtoMD/
 ├─ README.md
-├─ register_watcher.ps1
-├─ run_watcher.bat
 ├─ main.py
-├─ watcher.py
 ├─ src/
 │  ├─ config.py
 │  ├─ main.py
-│  ├─ watcher.py
 │  └─ modules/
 ├─ doc/
 │  ├─ USER_GUIDE.md
@@ -65,14 +61,14 @@ PDFtoMD/
 ### 3.2 구조 의도
 
 - 실제 파이썬 로직은 `src/` 아래에 모았습니다.
-- 실행 편의를 위해 루트의 `main.py`, `watcher.py`는 진입점 역할만 합니다.
+- 실행 편의를 위해 루트의 `main.py`는 진입점 역할만 합니다.
 - 운영 문서는 `doc/` 아래에 모았습니다.
 - 파일 흐름 폴더는 번호를 붙여 순서를 직관적으로 보이게 했습니다.
 
 ## 4. 현재 동작 방식
 
-- `01_watch_inbox/` 폴더에 들어온 PDF 자동 감지
-- watcher가 `01_watch_inbox/` 폴더를 30분 주기로 확인하여, 파일이 이미 들어 있는 상태에서도 자동 처리 시도
+- `01_watch_inbox/` 폴더에 PDF를 넣은 뒤, Antigravity IDE 프롬프트에서 실행 명령을 내리면 처리 시작
+- `main.py`가 `01_watch_inbox/` 폴더 내 모든 PDF를 일괄 스캔하여 순차 처리
 - PDF 유효성 검사 후 비정상 파일은 `03_rejected/`로 격리
 - PDF를 페이지별로 분할 후 외부 변환기 `C:\Code\docuConverter01`에 전달
 - 변환된 페이지별 Markdown을 하나로 병합
@@ -83,13 +79,11 @@ PDFtoMD/
 ### 4.1 구조 요약
 
 ```text
-watcher.py
-  -> src/watcher.py
-    -> main.py
-      -> src/main.py
-        -> src/modules/*
-          -> C:\Code\docuConverter01
-            -> 04_done/
+main.py
+  -> src/main.py
+    -> src/modules/*
+      -> C:\Code\docuConverter01
+        -> 04_done/
 ```
 
 ## 5. 다른 PC 설치 절차
@@ -152,41 +146,32 @@ Copy-Item .env.example .env
 ### 5.5 첫 실행 전 권장 확인
 
 - `src/config.py`의 경로가 현재 PC 구조와 맞는지 확인
-- `register_watcher.ps1`와 `run_watcher.bat`의 경로가 `C:\Code\PDFtoMD` 기준인지 확인
 - Windows PowerShell 실행 정책 때문에 스크립트 실행이 막히면 관리자 승인 후 허용
 
 ## 6. 설치 후 3단계 검증
 
 다른 PC에 설치한 뒤에는 아래 3단계로 빠르게 정상 여부를 확인할 수 있습니다.
 
-1. `run_watcher.bat`를 실행해 watcher가 시작되는지 확인
+1. `python main.py`를 실행해 배치 처리 프로세스가 시작되는지 확인
 2. `01_watch_inbox` 폴더에 테스트용 PDF 1개를 넣고 `05_logs\run.log`에 시작 로그가 찍히는지 확인
 3. `04_done` 폴더에 결과 `.md`, 원본 PDF, 작업 브리핑 `.md`가 생성되는지 확인
 
 ## 7. 사용법
 
-### 7.1 자동 감시 등록
+### 7.1 수동 실행 (Antigravity 프롬프트)
 
-PowerShell에서 아래 스크립트를 실행하면 Windows 로그인 시 watcher가 자동으로 시작됩니다.
+`01_watch_inbox/` 폴더에 PDF 파일을 넣은 후, Antigravity IDE 프롬프트에서 **"작업 시작"** 또는 **"PDF 변환 시작"** 등의 명령을 주시면 작업이 시작됩니다.
 
-현재 등록 방식은 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` 기준의 사용자 로그인 자동 시작입니다.
+제가 내부적으로 아래 명령을 실행하여 모든 대기 파일을 처리합니다.
 
-```powershell
-.\register_watcher.ps1
+```bash
+python main.py
 ```
 
-### 7.2 수동 실행
-
-실시간으로 콘솔 창을 보면서 실행하려면 아래 파일을 실행합니다.
-
-```bat
-run_watcher.bat
-```
-
-### 7.3 운영 흐름
+### 7.2 운영 흐름
 
 1. `01_watch_inbox/` 폴더에 PDF를 넣습니다.
-2. 시스템이 자동으로 처리합니다.
+2. Antigravity 프롬프트에서 **"작업 시작"** 등의 명령을 내립니다.
 3. 결과 `.md`, 원본 PDF, 작업 브리핑 `.md`는 `04_done/` 폴더에서 확인합니다.
 
 ## 8. 요구 사항
